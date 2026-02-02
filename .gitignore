@@ -38,3 +38,5 @@ next-env.d.ts
 /dist
 # next-agents-md
 .next-docs/
+
+/generated/prisma

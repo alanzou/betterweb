@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react';
-import { Check, Sparkles, Zap, Crown } from 'lucide-react';
+import { Check, Sparkles, Zap, Crown, Loader2 } from 'lucide-react';
 
 interface PricingPlan {
   name: string;
@@ -13,11 +13,13 @@ interface PricingPlan {
   highlighted: boolean;
   badge?: string;
   icon: React.ReactNode;
+  priceId: string;
 }
 
 const Pricing = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -55,6 +57,7 @@ const Pricing = () => {
       cta: 'Get Started',
       highlighted: false,
       icon: <Zap size={24} />,
+      priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_STARTER || '',
     },
     {
       name: 'Professional',
@@ -74,6 +77,7 @@ const Pricing = () => {
       highlighted: true,
       badge: 'Most Popular',
       icon: <Sparkles size={24} />,
+      priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PROFESSIONAL || '',
     },
     {
       name: 'Enterprise',
@@ -89,11 +93,47 @@ const Pricing = () => {
         'Performance optimization',
         'Security monitoring',
       ],
-      cta: 'Contact Sales',
+      cta: 'Get Started',
       highlighted: false,
       icon: <Crown size={24} />,
+      priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ENTERPRISE || '',
     },
   ];
+
+  const handleCheckout = async (plan: PricingPlan) => {
+    try {
+      setLoadingPlan(plan.name);
+
+      const response = await fetch('/api/stripe/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          priceId: plan.priceId,
+          metadata: {
+            plan_name: plan.name,
+            plan_period: plan.period,
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create checkout session');
+      }
+
+      const { url } = await response.json();
+
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert('Failed to start checkout. Please try again.');
+    } finally {
+      setLoadingPlan(null);
+    }
+  };
 
   return (
     <section
@@ -219,13 +259,22 @@ const Pricing = () => {
 
                 {/* CTA Button */}
                 <button
-                  className={`w-full py-4 rounded-lg font-semibold transition-all duration-300 ${
+                  onClick={() => handleCheckout(plan)}
+                  disabled={loadingPlan === plan.name}
+                  className={`w-full py-4 rounded-lg font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
                     plan.highlighted
                       ? 'bg-[#00d4ff] text-[#050510] hover:shadow-[0_0_30px_rgba(0,212,255,0.4)] hover:-translate-y-1'
                       : 'bg-white/5 text-white border border-white/10 hover:border-[#00d4ff]/50 hover:bg-[#00d4ff]/10'
                   }`}
                 >
-                  {plan.cta}
+                  {loadingPlan === plan.name ? (
+                    <>
+                      <Loader2 size={20} className="animate-spin" />
+                      <span>Processing...</span>
+                    </>
+                  ) : (
+                    plan.cta
+                  )}
                 </button>
               </div>
             </div>

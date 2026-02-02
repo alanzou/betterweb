@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model businesses {
+  id             String    @id
+  customer_id    String    @unique
+  business_name  String
+  website        String?
+  industry       String
+  business_size  String
+  project_goals  String
+  timeline       String
+  created_at     DateTime  @default(now())
+  updated_at     DateTime
+  google_map_url String?
+  nextjs_url     String?
+  customers      customers @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+}
+
+model customers {
+  id            String          @id
+  stripe_id     String?         @unique
+  email         String          @unique
+  first_name    String
+  last_name     String
+  phone         String
+  address       String
+  city          String
+  state         String
+  zip_code      String
+  created_at    DateTime        @default(now())
+  updated_at    DateTime
+  businesses    businesses?
+  subscriptions subscriptions[]
+  transactions  transactions[]
+}
+
+model subscriptions {
+  id                     String             @id
+  customer_id            String
+  stripe_subscription_id String?            @unique
+  plan_name              String
+  plan_price             Decimal            @db.Decimal(10, 2)
+  status                 SubscriptionStatus @default(ACTIVE)
+  current_period_start   DateTime?
+  current_period_end     DateTime?
+  canceled_at            DateTime?
+  created_at             DateTime           @default(now())
+  updated_at             DateTime
+  customers              customers          @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+
+  @@index([customer_id])
+  @@index([status])
+}
+
+model transactions {
+  id                String            @id
+  customer_id       String
+  stripe_payment_id String            @unique
+  amount            Decimal           @db.Decimal(10, 2)
+  currency          String            @default("usd")
+  status            TransactionStatus @default(PENDING)
+  plan_name         String
+  plan_period       String
+  description       String?
+  receipt_email     String?
+  email_sent        Boolean           @default(false)
+  sms_sent          Boolean           @default(false)
+  metadata          Json?
+  created_at        DateTime          @default(now())
+  updated_at        DateTime
+  customers         customers         @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+
+  @@index([created_at])
+  @@index([customer_id])
+  @@index([status])
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  UNPAID
+  TRIALING
+  PAUSED
+}
+
+enum TransactionStatus {
+  PENDING
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+  CANCELED
+}
