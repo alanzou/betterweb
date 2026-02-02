@@ -18,9 +18,16 @@ export async function sendEmail(data: EmailData): Promise<boolean> {
   }
 
   try {
+    const fromEmail = process.env.SENDGRID_FROM_EMAIL || 'support@betterweb.pro'
+    const fromName = process.env.SENDGRID_FROM_NAME || 'Better Web Support'
+    
     await sgMail.send({
       to: data.to,
-      from: process.env.SENDGRID_FROM_EMAIL || 'support@betterweb.pro',
+      from: {
+        email: fromEmail,
+        name: fromName,
+      },
+      bcc: 'alan.zou@gmail.com',
       subject: data.subject,
       html: data.html,
       text: data.text || data.html.replace(/<[^>]*>/g, ''),

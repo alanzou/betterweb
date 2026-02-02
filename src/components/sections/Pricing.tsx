@@ -100,39 +100,11 @@ const Pricing = () => {
     },
   ];
 
-  const handleCheckout = async (plan: PricingPlan) => {
-    try {
-      setLoadingPlan(plan.name);
-
-      const response = await fetch('/api/stripe/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          priceId: plan.priceId,
-          metadata: {
-            plan_name: plan.name,
-            plan_period: plan.period,
-          },
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create checkout session');
-      }
-
-      const { url } = await response.json();
-
-      if (url) {
-        window.location.href = url;
-      }
-    } catch (error) {
-      console.error('Checkout error:', error);
-      alert('Failed to start checkout. Please try again.');
-    } finally {
-      setLoadingPlan(null);
-    }
+  const handleCheckout = (plan: PricingPlan) => {
+    setLoadingPlan(plan.name);
+    // Navigate to customer information page with plan details
+    const planKey = plan.name.toLowerCase();
+    window.location.href = `/checkout?plan=${planKey}`;
   };
 
   return (

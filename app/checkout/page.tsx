@@ -39,22 +39,14 @@ function CheckoutForm() {
     lastName: '',
     email: '',
     phone: '',
-    address: '',
-    city: '',
-    state: '',
-    zipCode: '',
     businessName: '',
     website: '',
-    industry: '',
-    businessSize: '',
-    projectGoals: '',
-    timeline: '',
   })
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -67,15 +59,23 @@ function CheckoutForm() {
     setError('')
 
     try {
-      const response = await fetch('/api/checkout', {
+      const response = await fetch('/api/stripe/create-checkout-session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...formData,
-          planName: plan.name,
           priceId: plan.priceId,
+          email: formData.email,
+          metadata: {
+            plan_name: plan.name,
+            plan_period: plan.period,
+            customer_first_name: formData.firstName,
+            customer_last_name: formData.lastName,
+            customer_phone: formData.phone,
+            customer_business: formData.businessName,
+            customer_website: formData.website,
+          },
         }),
       })
 
@@ -99,7 +99,7 @@ function CheckoutForm() {
 
   return (
     <div className="min-h-screen bg-[#050510] text-white py-12 px-6">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-xl mx-auto">
         {/* Back Button */}
         <Link
           href="/#pricing"
@@ -110,7 +110,7 @@ function CheckoutForm() {
         </Link>
 
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-10">
           <div className="inline-flex items-center gap-3 px-4 py-2 bg-white/5 rounded-full border border-white/10 mb-6">
             <Icon size={20} className="text-[#00d4ff]" />
             <span className="text-white font-semibold">{plan.name}</span>
@@ -118,22 +118,18 @@ function CheckoutForm() {
             <span className="text-[#a0a0b0]">{plan.period}</span>
           </div>
           <h1 className="text-3xl md:text-4xl font-bold mb-4 font-['Orbitron']">
-            Complete Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00d4ff] to-[#00ff88]">Order</span>
+            Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00d4ff] to-[#00ff88]">Information</span>
           </h1>
           <p className="text-[#a0a0b0] max-w-lg mx-auto">
-            Fill in your details below to proceed with your {plan.name} plan purchase.
+            Please provide your details so we can get started on your project.
           </p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Personal Information */}
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-6 md:p-8">
-            <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-full bg-[#00d4ff]/20 text-[#00d4ff] flex items-center justify-center text-sm font-bold">1</span>
-              Personal Information
-            </h2>
-            <div className="grid md:grid-cols-2 gap-6">
+            {/* Name Fields */}
+            <div className="grid md:grid-cols-2 gap-4 mb-4">
               <div>
                 <label className="block text-sm text-[#a0a0b0] mb-2">First Name *</label>
                 <input
@@ -158,187 +154,61 @@ function CheckoutForm() {
                   placeholder="Doe"
                 />
               </div>
-              <div>
-                <label className="block text-sm text-[#a0a0b0] mb-2">Email *</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/30 focus:border-[#00d4ff] focus:outline-none transition-colors"
-                  placeholder="john@example.com"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-[#a0a0b0] mb-2">Phone *</label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/30 focus:border-[#00d4ff] focus:outline-none transition-colors"
-                  placeholder="+1 (555) 000-0000"
-                />
-              </div>
             </div>
-          </div>
 
-          {/* Address */}
-          <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-6 md:p-8">
-            <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-full bg-[#00d4ff]/20 text-[#00d4ff] flex items-center justify-center text-sm font-bold">2</span>
-              Address
-            </h2>
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm text-[#a0a0b0] mb-2">Street Address *</label>
-                <input
-                  type="text"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/30 focus:border-[#00d4ff] focus:outline-none transition-colors"
-                  placeholder="123 Main St"
-                />
-              </div>
-              <div className="grid md:grid-cols-3 gap-6">
-                <div>
-                  <label className="block text-sm text-[#a0a0b0] mb-2">City *</label>
-                  <input
-                    type="text"
-                    name="city"
-                    value={formData.city}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/30 focus:border-[#00d4ff] focus:outline-none transition-colors"
-                    placeholder="New York"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-[#a0a0b0] mb-2">State *</label>
-                  <input
-                    type="text"
-                    name="state"
-                    value={formData.state}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/30 focus:border-[#00d4ff] focus:outline-none transition-colors"
-                    placeholder="NY"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-[#a0a0b0] mb-2">ZIP Code *</label>
-                  <input
-                    type="text"
-                    name="zipCode"
-                    value={formData.zipCode}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/30 focus:border-[#00d4ff] focus:outline-none transition-colors"
-                    placeholder="10001"
-                  />
-                </div>
-              </div>
+            {/* Email */}
+            <div className="mb-4">
+              <label className="block text-sm text-[#a0a0b0] mb-2">Email *</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/30 focus:border-[#00d4ff] focus:outline-none transition-colors"
+                placeholder="john@example.com"
+              />
             </div>
-          </div>
 
-          {/* Business Information */}
-          <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-6 md:p-8">
-            <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-full bg-[#00d4ff]/20 text-[#00d4ff] flex items-center justify-center text-sm font-bold">3</span>
-              Business Information
-            </h2>
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm text-[#a0a0b0] mb-2">Business Name *</label>
-                <input
-                  type="text"
-                  name="businessName"
-                  value={formData.businessName}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/30 focus:border-[#00d4ff] focus:outline-none transition-colors"
-                  placeholder="Acme Inc."
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-[#a0a0b0] mb-2">Current Website (optional)</label>
-                <input
-                  type="url"
-                  name="website"
-                  value={formData.website}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/30 focus:border-[#00d4ff] focus:outline-none transition-colors"
-                  placeholder="https://example.com"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-[#a0a0b0] mb-2">Industry *</label>
-                <select
-                  name="industry"
-                  value={formData.industry}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-[#00d4ff] focus:outline-none transition-colors"
-                >
-                  <option value="" className="bg-[#0a0a1a]">Select industry</option>
-                  <option value="restaurant" className="bg-[#0a0a1a]">Restaurant / Food Service</option>
-                  <option value="retail" className="bg-[#0a0a1a]">Retail / E-commerce</option>
-                  <option value="healthcare" className="bg-[#0a0a1a]">Healthcare</option>
-                  <option value="technology" className="bg-[#0a0a1a]">Technology</option>
-                  <option value="professional" className="bg-[#0a0a1a]">Professional Services</option>
-                  <option value="construction" className="bg-[#0a0a1a]">Construction / Home Services</option>
-                  <option value="education" className="bg-[#0a0a1a]">Education</option>
-                  <option value="other" className="bg-[#0a0a1a]">Other</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm text-[#a0a0b0] mb-2">Business Size *</label>
-                <select
-                  name="businessSize"
-                  value={formData.businessSize}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-[#00d4ff] focus:outline-none transition-colors"
-                >
-                  <option value="" className="bg-[#0a0a1a]">Select size</option>
-                  <option value="solo" className="bg-[#0a0a1a]">Just me</option>
-                  <option value="small" className="bg-[#0a0a1a]">2-10 employees</option>
-                  <option value="medium" className="bg-[#0a0a1a]">11-50 employees</option>
-                  <option value="large" className="bg-[#0a0a1a]">50+ employees</option>
-                </select>
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm text-[#a0a0b0] mb-2">Project Goals *</label>
-                <textarea
-                  name="projectGoals"
-                  value={formData.projectGoals}
-                  onChange={handleChange}
-                  required
-                  rows={3}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/30 focus:border-[#00d4ff] focus:outline-none transition-colors resize-none"
-                  placeholder="Tell us about your project goals and what you're looking to achieve..."
-                />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm text-[#a0a0b0] mb-2">Timeline *</label>
-                <select
-                  name="timeline"
-                  value={formData.timeline}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-[#00d4ff] focus:outline-none transition-colors"
-                >
-                  <option value="" className="bg-[#0a0a1a]">When do you need this completed?</option>
-                  <option value="asap" className="bg-[#0a0a1a]">As soon as possible</option>
-                  <option value="1-2weeks" className="bg-[#0a0a1a]">1-2 weeks</option>
-                  <option value="1month" className="bg-[#0a0a1a]">Within a month</option>
-                  <option value="flexible" className="bg-[#0a0a1a]">Flexible / No rush</option>
-                </select>
-              </div>
+            {/* Phone */}
+            <div className="mb-4">
+              <label className="block text-sm text-[#a0a0b0] mb-2">Phone Number *</label>
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/30 focus:border-[#00d4ff] focus:outline-none transition-colors"
+                placeholder="+1 (555) 000-0000"
+              />
+            </div>
+
+            {/* Business Name */}
+            <div className="mb-4">
+              <label className="block text-sm text-[#a0a0b0] mb-2">Business Name *</label>
+              <input
+                type="text"
+                name="businessName"
+                value={formData.businessName}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/30 focus:border-[#00d4ff] focus:outline-none transition-colors"
+                placeholder="Acme Inc."
+              />
+            </div>
+
+            {/* Website */}
+            <div>
+              <label className="block text-sm text-[#a0a0b0] mb-2">Business Website (optional)</label>
+              <input
+                type="url"
+                name="website"
+                value={formData.website}
+                onChange={handleChange}
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/30 focus:border-[#00d4ff] focus:outline-none transition-colors"
+                placeholder="https://example.com"
+              />
             </div>
           </div>
 
@@ -362,7 +232,7 @@ function CheckoutForm() {
               </>
             ) : (
               <>
-                Proceed to Payment
+                Continue to Payment
               </>
             )}
           </button>

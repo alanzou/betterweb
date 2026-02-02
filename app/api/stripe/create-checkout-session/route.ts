@@ -43,7 +43,8 @@ export async function POST(req: NextRequest) {
       phone_number_collection: {
         enabled: true,
       },
-      customer_creation: 'always',
+      // customer_creation is only valid for payment mode
+      ...(isSubscription ? {} : { customer_creation: 'always' as const }),
     };
 
     if (email) {

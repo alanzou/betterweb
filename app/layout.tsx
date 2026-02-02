@@ -61,6 +61,28 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${orbitron.variable}`}>
       <body className="min-h-screen bg-[#050510] text-white overflow-x-hidden antialiased">
         {children}
+        
+        {/* Chatwoot Live Chat Widget */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(d,t) {
+                var BASE_URL="https://app.chatwoot.com";
+                var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+                g.src=BASE_URL+"/packs/js/sdk.js";
+                g.defer = true;
+                g.async = true;
+                s.parentNode.insertBefore(g,s);
+                g.onload=function(){
+                  window.chatwootSDK.run({
+                    websiteToken: '${process.env.NEXT_PUBLIC_CHATWOOT_TOKEN || 'YOUR_CHATWOOT_TOKEN'}',
+                    baseUrl: BASE_URL
+                  })
+                }
+              })(document,"script");
+            `,
+          }}
+        />
       </body>
     </html>
   )

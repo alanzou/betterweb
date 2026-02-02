@@ -9,7 +9,7 @@ datasource db {
 
 model businesses {
   id             String    @id
-  customer_id    String    @unique
+  customer_id    String
   business_name  String
   website        String?
   industry       String
@@ -21,6 +21,8 @@ model businesses {
   google_map_url String?
   nextjs_url     String?
   customers      customers @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+
+  @@index([customer_id])
 }
 
 model customers {
@@ -36,7 +38,7 @@ model customers {
   zip_code      String
   created_at    DateTime        @default(now())
   updated_at    DateTime
-  businesses    businesses?
+  businesses    businesses[]
   subscriptions subscriptions[]
   transactions  transactions[]
 }

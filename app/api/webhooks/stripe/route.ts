@@ -83,15 +83,18 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     return
   }
 
+  // Get customer info from metadata (from our checkout form) or fall back to Stripe data
+  const metadata = session.metadata || {}
   const email = customer.email || fullSession.customer_details?.email || ''
-  const phone = fullSession.customer_details?.phone || ''
-  const name = fullSession.customer_details?.name || customer.name || ''
-  const [firstName, ...lastNameParts] = name.split(' ')
-  const lastName = lastNameParts.join(' ') || ''
+  const phone = metadata.customer_phone || fullSession.customer_details?.phone || ''
+  const firstName = metadata.customer_first_name || ''
+  const lastName = metadata.customer_last_name || ''
+  const businessName = metadata.customer_business || ''
+  const website = metadata.customer_website || ''
   const address = fullSession.customer_details?.address
 
-  const planName = session.metadata?.plan_name || lineItem?.description || 'Unknown Plan'
-  const planPeriod = session.metadata?.plan_period || 'one-time'
+  const planName = metadata.plan_name || lineItem?.description || 'Unknown Plan'
+  const planPeriod = metadata.plan_period || 'one-time'
   const amount = fullSession.amount_total ? `$${(fullSession.amount_total / 100).toFixed(2)}` : '$0.00'
 
   // Create or update customer in database
@@ -117,16 +120,36 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     })
     console.log('Created new customer:', dbCustomer.id)
   } else {
-    // Update existing customer with Stripe ID if missing
-    if (!dbCustomer.stripe_id) {
-      await prisma.customers.update({
-        where: { id: dbCustomer.id },
-        data: {
-          stripe_id: customer.id,
-          updated_at: new Date(),
-        },
-      })
-    }
+    // Update existing customer with latest info
+    await prisma.customers.update({
+      where: { id: dbCustomer.id },
+      data: {
+        stripe_id: customer.id,
+        first_name: firstName || dbCustomer.first_name,
+        last_name: lastName || dbCustomer.last_name,
+        phone: phone || dbCustomer.phone,
+        updated_at: new Date(),
+      },
+    })
+    console.log('Updated customer:', dbCustomer.id)
+  }
+
+  // Create business record for this purchase (customer can have multiple businesses)
+  if (businessName) {
+    await prisma.businesses.create({
+      data: {
+        id: crypto.randomUUID(),
+        customer_id: dbCustomer.id,
+        business_name: businessName,
+        website: website || null,
+        industry: 'other',
+        business_size: 'small',
+        project_goals: `${planName} plan purchase`,
+        timeline: 'asap',
+        updated_at: new Date(),
+      },
+    })
+    console.log('Created business for customer:', dbCustomer.id)
   }
 
   // Create transaction record

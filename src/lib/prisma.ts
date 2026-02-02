@@ -2,7 +2,16 @@ import { PrismaClient } from '../../generated/prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { Pool } from 'pg'
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL })
+// Parse connection string without sslmode to let us configure SSL properly
+const baseUrl = process.env.DATABASE_URL?.split('?')[0]
+
+const pool = new Pool({ 
+  connectionString: baseUrl,
+  ssl: {
+    rejectUnauthorized: false  // Accept self-signed certificates (TimescaleDB)
+  }
+})
+
 const adapter = new PrismaPg(pool)
 
 const globalForPrisma = globalThis as unknown as {
