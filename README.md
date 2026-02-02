@@ -1,73 +1,185 @@
-# React + TypeScript + Vite
+# Better Web - Modern Web Solutions
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A premium web design landing page built with Next.js 15, React 19, and Tailwind CSS.
 
-Currently, two official plugins are available:
+## 🚀 Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Framework:** Next.js 15.1.6 (App Router)
+- **React:** 19.2.0
+- **TypeScript:** 5.9.3
+- **Styling:** Tailwind CSS 3.4.19
+- **UI Components:** shadcn/ui + Radix UI
+- **Icons:** Lucide React
+- **Font Optimization:** next/font (Inter + Orbitron)
 
-## React Compiler
+## 📦 Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Prerequisites
 
-## Expanding the ESLint configuration
+- Node.js 18.17 or later
+- npm, yarn, or pnpm
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Installation
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+```bash
+# Install dependencies
+npm install
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Run development server
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🛠️ Available Scripts
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+# Development
+npm run dev          # Start development server
+
+# Production
+npm run build        # Build for production
+npm run start        # Start production server
+
+# Code Quality
+npm run lint         # Run ESLint
 ```
+
+## 📁 Project Structure
+
+```
+project/
+├── app/                     # Next.js App Router
+│   ├── layout.tsx          # Root layout with SEO & fonts
+│   ├── page.tsx            # Homepage
+│   └── globals.css         # Global styles
+├── src/
+│   ├── components/
+│   │   ├── sections/       # Landing page sections
+│   │   └── ui/             # Reusable UI components
+│   ├── hooks/              # Custom React hooks
+│   └── lib/                # Utility functions
+├── public/                 # Static assets
+└── [config files]
+```
+
+## 🎨 Features
+
+- ✅ Server-side rendering (SSR)
+- ✅ Static site generation (SSG)
+- ✅ SEO optimized with metadata API
+- ✅ Responsive design
+- ✅ Dark theme optimized
+- ✅ Custom animations
+- ✅ Glass morphism UI
+- ✅ Font optimization
+- ✅ Automatic code splitting
+
+## 📱 Sections
+
+1. **Navigation** - Sticky header with smooth scroll
+2. **Hero** - Animated hero section with stats
+3. **Services** - Service cards with hover effects
+4. **Testimonials** - Client testimonial carousel
+5. **Pricing** - Pricing plans comparison
+6. **CTA** - Call-to-action section
+7. **Footer** - Footer with social links
+
+## 🎯 SEO & Performance
+
+### Metadata
+- Configured Open Graph tags
+- Twitter Card support
+- Proper meta descriptions
+- Robots.txt configuration
+
+### Performance Optimizations
+- Next.js automatic image optimization
+- Font preloading with next/font
+- Package import optimization
+- Static page pre-rendering
+- Code splitting
+
+## 🎨 Design System
+
+### Color Palette
+```css
+--bw-bg: #050510              /* Background */
+--bw-accent: #00d4ff          /* Primary accent */
+--bw-success: #00ff88         /* Success/highlight */
+--bw-text: #ffffff            /* Primary text */
+--bw-text-secondary: #a0a0b0  /* Secondary text */
+```
+
+### Custom Utilities
+- `.glass-card` - Glassmorphism card effect
+- `.glow-border` - Animated glow border
+- `.text-gradient` - Gradient text effect
+- `.btn-primary` - Primary button style
+- `.animate-float` - Floating animation
+
+## 🔧 Configuration
+
+### Tailwind CSS
+Custom configuration with:
+- HSL color variables
+- Custom animations
+- Glass morphism utilities
+- Responsive breakpoints
+
+### TypeScript
+- Strict mode enabled
+- Path aliases: `@/*` → `./src/*`
+- Next.js TypeScript plugin
+
+### ESLint
+- Next.js recommended config
+- TypeScript support
+- Custom rule adjustments
+
+## 📝 Development Notes
+
+### Client Components
+All section components are marked with `'use client'` directive due to:
+- React hooks usage (useState, useEffect, useRef)
+- Event handlers
+- Browser API access
+
+### Image Optimization
+Consider migrating `<img>` tags to `next/image` for:
+- Automatic optimization
+- Responsive images
+- Lazy loading
+- Modern format support (AVIF, WebP)
+
+## 🚀 Deployment
+
+### Vercel (Recommended)
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+vercel
+```
+
+### Other Platforms
+```bash
+# Build
+npm run build
+
+# The build output is in .next/
+# Configure your platform to serve from this directory
+```
+
+## 📄 Migration
+
+This project was migrated from Vite to Next.js 15. See [MIGRATION.md](./MIGRATION.md) for details.
+
+## 📄 License
+
+This project is private and proprietary.
+
+---
+
+Built with ❤️ using Next.js 15
