@@ -36,3 +36,5 @@ next-env.d.ts
 
 # Old build files
 /dist
+# next-agents-md
+.next-docs/

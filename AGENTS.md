@@ -28,3 +28,5 @@ No test runner or `test` script is configured yet. If you add tests, define a `t
 Recent commits use a bracketed source tag plus a short summary (e.g., `[Claude Code] add pricing section`). Keep messages concise and imperative.
 
 For PRs, include a brief description, link any related issues, list manual test steps, and attach screenshots for UI changes. Keep diffs focused; only update generated files when required (for example, `package-lock.json` after dependency changes).
+
+<!-- NEXT-AGENTS-MD-START -->[Next.js Docs Index]|root: ./.next-docs|STOP. What you remember about Next.js is WRONG for this project. Always search docs and read before any task.|If docs missing, run this command first: npx @next/codemod agents-md --output AGENTS.md<!-- NEXT-AGENTS-MD-END -->
