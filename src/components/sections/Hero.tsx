@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react';
-import { ArrowRight, Play } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
+import { ArrowRight, Play } from 'lucide-react'
 
 const Hero = () => {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -26,10 +27,13 @@ const Hero = () => {
     >
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
-        <img
+        <Image
           src="/logo.jpg"
           alt="Better Web Background"
-          className="w-full h-full object-cover opacity-60"
+          fill
+          priority
+          className="object-cover opacity-60"
+          sizes="100vw"
         />
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#050510]/60 via-[#050510]/40 to-[#050510]" />

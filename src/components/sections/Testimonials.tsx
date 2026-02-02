@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image'
 import { ChevronLeft, ChevronRight, Quote } from 'lucide-react';
 
 interface Testimonial {
@@ -81,7 +82,7 @@ const Testimonials = () => {
   const getCardStyle = (index: number) => {
     const diff = index - currentIndex;
     const normalizedDiff = ((diff + testimonials.length) % testimonials.length);
-    
+
     if (normalizedDiff === 0) {
       return {
         transform: 'translateX(0) scale(1) rotateY(0deg)',
@@ -163,10 +164,12 @@ const Testimonials = () => {
 
                   {/* Author */}
                   <div className="flex items-center gap-4">
-                    <img
+                    <Image
                       src={testimonial.avatar}
                       alt={testimonial.author}
-                      className="w-14 h-14 rounded-full object-cover border-2 border-[#00d4ff]/30"
+                      width={56}
+                      height={56}
+                      className="rounded-full object-cover border-2 border-[#00d4ff]/30"
                     />
                     <div>
                       <div className="text-white font-semibold">
